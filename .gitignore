@@ -1,0 +1,3 @@
+
+# Ignore wav files used to test the code out.
+*.wav
