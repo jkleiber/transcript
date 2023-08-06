@@ -2,12 +2,32 @@
 
 from os import path, walk
 from flask import Flask, render_template, send_from_directory
-from flask import request, abort, redirect, url_for
+from flask import request, abort, url_for
+
+from process_uploads import recv_uploaded_audio
+from transcribe import transcribe_audio_file
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+
+# Max upload size: 25 MB
+app.config['MAX_CONTENT_LENGTH'] = 25 * 1000 * 1000
+
+app.config['UPLOAD_FOLDER'] = "/tmp"
+
+
+@app.route('/transcribe', methods=['POST', 'GET'])
+def generate_transcript():
+    result = ""
+    if request.method == 'POST':
+        file_loc = recv_uploaded_audio(request, app.config["UPLOAD_FOLDER"])
+        result = transcribe_audio_file(file_loc)
+
+        print(f"Result: {result}")
+
+    return render_template("index.html", transcript_results=result)
 
 @app.route('/', methods=['GET', 'POST'])
 def poll_landing_page():

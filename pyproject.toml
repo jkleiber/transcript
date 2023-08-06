@@ -4,13 +4,16 @@ version = "0.1.0"
 description = ""
 authors = ["Justin Kleiber <jkleiber8@gmail.com>"]
 readme = "README.md"
-packages = []
+packages = [{ include = "app" }]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-paddlepaddle = "^2.5.1"
 flask = "^2.3.2"
 gunicorn = "^21.2.0"
+pydub = "^0.25.1"
+werkzeug = "^2.3.6"
+openai-whisper = "^20230314"
+vosk = "^0.3.45"
 
 
 [build-system]

@@ -1,9 +1,30 @@
 <html>
-    <head>
 
-    </head>
+<head>
 
-    <body>
-        <h1>Transcript</h1>
-    </body>
+</head>
+
+<body>
+    <h1>Transcript</h1>
+
+    <h2>Input</h1>
+
+        <form id="upload-form" action="/transcribe" method="post" enctype="multipart/form-data">
+            <input type="file" id="audio-input" name="audio_file" accept=".wav" />
+        </form>
+
+        <h2>Output</h2>
+
+        <div>
+            {{ transcript_results }}
+        </div>
+
+        <script>
+            document.getElementById("audio-input").onchange = function () {
+                document.getElementById("upload-form").submit();
+                console.log("Uploaded")
+            };
+        </script>
+</body>
+
 </html>
