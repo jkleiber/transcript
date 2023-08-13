@@ -16,14 +16,15 @@ RUN $POETRY_HOME/bin/poetry --version
 COPY ./ /transcript
 WORKDIR /transcript
 
+# Install the pypoetry dependencies globally
+RUN poetry export -f requirements.txt --output requirements.txt
+RUN python3 -m pip install -r requirements.txt
+
 # Expose the port
 EXPOSE 5001
 
 # Install developer dependencies
 RUN apt-get install -y htop
-
-# Install dependencies based on requirements.txt
-# RUN python -m pip install -r requirements.txt
 
 # ENTRYPOINT [ "gunicorn" ]
 

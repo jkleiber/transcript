@@ -14,7 +14,33 @@ pydub = "^0.25.1"
 werkzeug = "^2.3.6"
 openai-whisper = "^20230314"
 vosk = "^0.3.45"
+torch = {version = "^2.0.1+cpu", source = "pytorch-cpu-src"}
+torchvision = {version = "^0.15.2+cpu", source = "pytorch-cpu-src"}
+torchaudio = {version = "^2.0.2+cpu", source = "pytorch-cpu-src"}
 
+
+[[tool.poetry.source]]
+name = "torch"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "explicit"
+
+
+[[tool.poetry.source]]
+name = "torchvision"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "explicit"
+
+
+[[tool.poetry.source]]
+name = "torchaudio"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "explicit"
+
+
+[[tool.poetry.source]]
+name = "pytorch-cpu-src"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "explicit"
 
 [build-system]
 requires = ["poetry-core"]

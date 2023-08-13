@@ -5,7 +5,8 @@ from flask import Flask, render_template, send_from_directory
 from flask import request, abort, url_for
 
 from process_uploads import recv_uploaded_audio
-from transcribe import transcribe_audio_file
+# from transcribers.vosk_transcriber import VoskTranscriber
+from transcribers.whisper_transcriber import WhisperTranscriber
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -17,13 +18,16 @@ app.config['MAX_CONTENT_LENGTH'] = 25 * 1000 * 1000
 
 app.config['UPLOAD_FOLDER'] = "/tmp"
 
+# Set up the transcriber
+scribe = WhisperTranscriber()
 
 @app.route('/transcribe', methods=['POST', 'GET'])
 def generate_transcript():
     result = ""
     if request.method == 'POST':
         file_loc = recv_uploaded_audio(request, app.config["UPLOAD_FOLDER"])
-        result = transcribe_audio_file(file_loc)
+        result = scribe.transcribe_audio_file(file_loc)
+        # result = transcribe_audio_file(file_loc)
 
         print(f"Result: {result}")
 
@@ -34,6 +38,8 @@ def poll_landing_page():
     return render_template("index.html")
 
 if __name__ == "__main__":
+    print("Initializing Transcript...")
+
     # Hot reloading for when static files change.
     # Don't include static/data, since those files should be explicitly loaded and saved anyway.
     extra_dirs = ['static/css', 'static/components', 'static/doc',
