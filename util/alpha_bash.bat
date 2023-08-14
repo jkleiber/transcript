@@ -1,5 +1,5 @@
 @echo off
 
-set container="transcript-dev2-container"
+set container="transcript-alpha-container"
 
 docker exec -it %container% /bin/bash

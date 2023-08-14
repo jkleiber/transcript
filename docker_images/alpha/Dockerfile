@@ -1,4 +1,3 @@
-# FROM python:3.10.11
 FROM ubuntu:22.04
 
 # Install system level dependencies
@@ -26,9 +25,5 @@ EXPOSE 5001
 # Install developer dependencies
 RUN apt-get install -y htop
 
-# ENTRYPOINT [ "gunicorn" ]
-
-# # This works when running without systemd
-# CMD ["-b", "0.0.0.0:5001", "wsgi:app"]
-
+# Run the container until it is explicitly stopped
 CMD tail -f /dev/null

@@ -2,7 +2,7 @@
 
 from os import path, walk
 from flask import Flask, render_template, send_from_directory
-from flask import request, abort, url_for
+from flask import request, redirect, url_for, session
 
 from process_uploads import recv_uploaded_audio
 # from transcribers.vosk_transcriber import VoskTranscriber
@@ -17,6 +17,7 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.config['MAX_CONTENT_LENGTH'] = 25 * 1000 * 1000
 
 app.config['UPLOAD_FOLDER'] = "/tmp"
+app.secret_key = 'very secret secret key'
 
 # Set up the transcriber
 scribe = WhisperTranscriber()
@@ -29,13 +30,20 @@ def generate_transcript():
         result = scribe.transcribe_audio_file(file_loc)
         # result = transcribe_audio_file(file_loc)
 
-        print(f"Result: {result}")
+        # print(f"Result: {result}")
+        session['transcript'] = result
+    else:
+        pass
 
-    return render_template("index.html", transcript_results=result)
+    # Otherwise render the results.
+    # return render_template("index.html", transcript=result)
+
+    return redirect('/', code=307)
+
 
 @app.route('/', methods=['GET', 'POST'])
-def poll_landing_page():
-    return render_template("index.html")
+def main_page():
+    return render_template("index.html", transcript=session.get('transcript'))
 
 if __name__ == "__main__":
     print("Initializing Transcript...")
