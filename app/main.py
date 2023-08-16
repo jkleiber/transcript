@@ -1,8 +1,9 @@
 
 
 from os import path, walk
-from flask import Flask, render_template, send_from_directory
-from flask import request, redirect, url_for, session
+from flask import Flask, render_template
+from flask import request, redirect, session
+from flask import jsonify, make_response
 
 from process_uploads import recv_uploaded_audio
 # from transcribers.vosk_transcriber import VoskTranscriber
@@ -26,12 +27,13 @@ scribe = WhisperTranscriber()
 def generate_transcript():
     result = ""
     if request.method == 'POST':
-        file_loc = recv_uploaded_audio(request, app.config["UPLOAD_FOLDER"])
+        file_loc, fname = recv_uploaded_audio(request, app.config["UPLOAD_FOLDER"])
         result = scribe.transcribe_audio_file(file_loc)
         # result = transcribe_audio_file(file_loc)
 
         # print(f"Result: {result}")
         session['transcript'] = result
+        session['filename'] = fname
     else:
         pass
 
@@ -43,7 +45,7 @@ def generate_transcript():
 
 @app.route('/', methods=['GET', 'POST'])
 def main_page():
-    return render_template("index.html", transcript=session.get('transcript'))
+    return render_template("index.html", transcript=session.get('transcript'), filename=session.get('filename'))
 
 if __name__ == "__main__":
     print("Initializing Transcript...")

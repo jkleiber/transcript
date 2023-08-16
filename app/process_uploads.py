@@ -7,7 +7,7 @@ import os
 from werkzeug.utils import secure_filename
 
 # Uploads can only be certain extensions
-ALLOWED_EXTENSIONS = {'wav'}
+ALLOWED_EXTENSIONS = {'wav', 'm4a', 'mp3', 'mp4', 'mpeg', 'mpga', 'webm'}
 
 
 
@@ -16,7 +16,7 @@ def is_allowed_file_type(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def recv_uploaded_audio(request, dst_folder: str, key='audio_file') -> str:
+def recv_uploaded_audio(request, dst_folder: str, key='audio_file') -> tuple:
     """
     Receive an uploaded file and check to see if it is valid. If it is, save it
     and return the path to where it got saved.
@@ -24,6 +24,7 @@ def recv_uploaded_audio(request, dst_folder: str, key='audio_file') -> str:
     print(f"url: {request.url}\nfiles: {request.files}")
 
     new_file = ""
+    safe_filename = ""
     if request.method == "POST":
         # If the file we are looking for exists in the request, then process it.
         if key in request.files:
@@ -44,10 +45,10 @@ def recv_uploaded_audio(request, dst_folder: str, key='audio_file') -> str:
 
         else:
             # Otherwise, there is no file of interest
-            return ""
+            pass
     else:
-        return ""
+        pass
 
-    # Success! Return the location of the file just saved
-    return new_file    
+    # Return the location of the file just saved and its short name.
+    return new_file, safe_filename
     

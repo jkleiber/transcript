@@ -12,6 +12,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
 
+    <!-- Quill CSS -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
     <!-- jQuery -->
     <script src="/static/js/jquery-3.7.0.min.js"></script>
 
@@ -24,9 +27,12 @@
 
 
 <body>
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
         crossorigin="anonymous"></script>
+    <!-- Quill JS -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
     <!-- Show the navigation bar -->
     <div data-include="navbar"></div>
@@ -38,13 +44,16 @@
                 <h2>Input</h2>
 
                 <form id="upload-form" action="/transcribe" method="post" enctype="multipart/form-data">
-                    <input type="file" id="audio-input" name="audio_file" accept=".wav" />
+                    <input type="file" id="audio-input" name="audio_file"
+                        accept=".wav, .m4a, .mp3, .mp4, .mpeg, .mpga, .webm" />
                 </form>
             </div>
             <div class="col col-md-9">
                 <h2>Output</h2>
+                <b id="filename"> {{ filename }} </b>
+                <button type="button" class="btn btn-primary" onclick="downloadTranscript()">Save</button>
 
-                <div>
+                <div id="editor">
                     {{ transcript }}
                 </div>
             </div>
@@ -59,6 +68,32 @@
             document.getElementById("upload-form").submit();
             console.log("Uploaded")
         };
+    </script>
+
+    <!-- Initialize Quill editor -->
+    <script>
+        var quill = new Quill('#editor', {
+            theme: 'snow'
+        });
+    </script>
+
+    <script>
+        function downloadTranscript() {
+            // Pull the audio file information from the title.
+            var audio_file = document.getElementById("filename").innerHTML.trim();
+            var filename = audio_file + ".txt";
+
+            // Get the text from the editor and create a blob to download.
+            var text = quill.getText();
+            var blob = new Blob([text], { type: 'text/plain' });
+
+            // Download the file by creating a link and clicking it.
+            a = document.createElement('a');
+            a.href = window.URL.createObjectURL(blob);
+            a.style.display = 'none';
+            a.download = filename;
+            a.click();
+        }
     </script>
 </body>
 
