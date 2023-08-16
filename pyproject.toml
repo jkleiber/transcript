@@ -17,6 +17,7 @@ vosk = "^0.3.45"
 torch = {version = "^2.0.1+cpu", source = "pytorch-cpu-src"}
 torchvision = {version = "^0.15.2+cpu", source = "pytorch-cpu-src"}
 torchaudio = {version = "^2.0.2+cpu", source = "pytorch-cpu-src"}
+whisper-timestamped = {git = "https://github.com/linto-ai/whisper-timestamped"}
 
 
 [[tool.poetry.source]]

@@ -29,23 +29,30 @@ def generate_transcript():
     if request.method == 'POST':
         file_loc, fname = recv_uploaded_audio(request, app.config["UPLOAD_FOLDER"])
         result = scribe.transcribe_audio_file(file_loc)
-        # result = transcribe_audio_file(file_loc)
 
-        # print(f"Result: {result}")
-        session['transcript'] = result
+        print(result)
+
+        if type(scribe) is WhisperTranscriber:
+            data = scribe.process_results(result)
+            session['w-transcript'] = data['words']
+            print(data['words'])
+            session['transcript'] = None
+        else:
+            session['transcript'] = result
+            session['w-transcript'] = None
+
+        # Save file information
+        session['file_loc'] = file_loc
         session['filename'] = fname
     else:
         pass
-
-    # Otherwise render the results.
-    # return render_template("index.html", transcript=result)
 
     return redirect('/', code=307)
 
 
 @app.route('/', methods=['GET', 'POST'])
 def main_page():
-    return render_template("index.html", transcript=session.get('transcript'), filename=session.get('filename'))
+    return render_template("index.html", transcript=session.get('transcript'), whisper_transcript=session.get('w-transcript'), filename=session.get('filename'))
 
 if __name__ == "__main__":
     print("Initializing Transcript...")

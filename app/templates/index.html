@@ -33,6 +33,8 @@
         crossorigin="anonymous"></script>
     <!-- Quill JS -->
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <!-- Wavesurfer -->
+    <script src="https://unpkg.com/wavesurfer.js@7"></script>
 
     <!-- Show the navigation bar -->
     <div data-include="navbar"></div>
@@ -53,12 +55,26 @@
                 <b id="filename"> {{ filename }} </b>
                 <button type="button" class="btn btn-primary" onclick="downloadTranscript()">Save</button>
 
-                <div id="editor">
+                {% if transcript %}
+                <div id="editor" class="quill-editor">
                     {{ transcript }}
                 </div>
+                {% endif %}
+                {% if whisper_transcript %}
+                <div id="stamped-editor">
+                    {% for word in whisper_transcript %}
+                    <span contenteditable>
+                        {{ word['text'] }}
+                    </span>
+                    {% endfor %}
+                </div>
+                {% endif %}
             </div>
         </div>
+    </div>
 
+    <div id="waveform" class="soundwave">
+        <!-- the waveform will be rendered here -->
     </div>
 
     <div data-include="footer"></div>
@@ -70,21 +86,48 @@
         };
     </script>
 
-    <!-- Initialize Quill editor -->
+    <!-- Audio Management -->
     <script>
-        var quill = new Quill('#editor', {
-            theme: 'snow'
-        });
+        const wavesurfer = WaveSurfer.create({
+            container: '#waveform',
+            waveColor: '#4F4A85',
+            progressColor: '#383351',
+            url: '',
+        })
+
+        wavesurfer.on('interaction', () => {
+            wavesurfer.play()
+        })
     </script>
 
+    <!-- Initialize Quill editor -->
     <script>
+        // var quill = new Quill('#editor', {
+        //     theme: 'snow'
+        // });
+    </script>
+
+    <!-- File download -->
+    <script>
+        function getEditableTranscript() {
+            var editor = document.getElementById("stamped-editor");
+            var script = "";
+
+            for (var i = 0; i < editor.childElementCount; i++) {
+                script += editor.children[i].innerText;
+            }
+
+            return script;
+        }
+
         function downloadTranscript() {
             // Pull the audio file information from the title.
             var audio_file = document.getElementById("filename").innerHTML.trim();
             var filename = audio_file + ".txt";
 
             // Get the text from the editor and create a blob to download.
-            var text = quill.getText();
+
+            var text = getEditableTranscript();//quill.getText();
             var blob = new Blob([text], { type: 'text/plain' });
 
             // Download the file by creating a link and clicking it.
